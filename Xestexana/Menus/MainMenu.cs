@@ -1,44 +1,38 @@
-﻿using static Hospital.Info.ConsoleInfo;
+﻿using Hospital.Info;
+using static Hospital.Info.ChoiceMenuInfo;
+using static Hospital.Info.ConsoleInfo;
+
 namespace Hospital.Menus
 {
     public class MainMenu
     {
         public static void ShowMainMenu()
         {
+            string[] menu = { "Admin Girisi", "User Qeydiyyati", "User Login", "Hekim Qeydiyyati", "Hekim Login", "Cixis" };
             while (true)
             {
-                PrintHeader("Xestaxana Qebul Sistemi");
-                Console.WriteLine("1. Admin Girisi");
-                Console.WriteLine("2. User Qeydiyyati");
-                Console.WriteLine("3. User Login");
-                Console.WriteLine("4. Hekim Qeydiyyati");
-                Console.WriteLine("5. Hekim Login");
-                Console.WriteLine("6. Cixis");
-                Console.WriteLine();
-                Console.Write("Seciminiz: ");
-                string? choice = Console.ReadLine();
-                switch (choice)
+
+                ChoiceMenuInfo c = new();
+                int secim = c.Choices(menu, "Xestaxana Qebul Sistemi");
+                switch (secim)
                 {
-                    case "1":
+                    case 0:
                         AdminMenus.AdminLoginFlow();
                         break;
-                    case "2":
+                    case 1:
                         UserMenu.UserRegisterFlow();
                         break;
-                    case "3":
+                    case 2:
                         UserMenu.UserLoginFlow();
                         break;
-                    case "4":
+                    case 3:
                         DoctorMenu.DoctorRegisterFlow();
                         break;
-                    case "5":
+                    case 4:
                         DoctorMenu.DoctorLoginFlow();
                         break;
-                    case "6":
+                    case 5:
                         return;
-                    default:
-                        PrintError("Yanlis secim yeniden cehd edin");
-                        break;
                 }
             }
         }

@@ -1,6 +1,7 @@
 ﻿using Hospital.Back;
-using static Hospital.Info.ConsoleInfo;
+using Hospital.Info;
 using Hospital.Properties;
+using static Hospital.Info.ConsoleInfo;
 
 namespace Hospital.Menus
 {
@@ -11,6 +12,8 @@ namespace Hospital.Menus
         private static readonly UserService _userService = new();
         private static readonly ReceiptService _receiptService = new();
         private static readonly NotificationService _notificationService = new();
+
+
         public static void UserRegisterFlow()
         {
             PrintHeader("User Qeydiyyati");
@@ -69,32 +72,22 @@ namespace Hospital.Menus
         private static void BookingFlow(User user)
         {
             var departments = Enum.GetValues<Department>();
-            int backOption = departments.Length + 1;
-
-            PrintHeader("Sobe Secimi");
+            ChoiceMenuInfo c = new();
+            string[] deptMenu = new string[departments.Length + 1];
             for (int i = 0; i < departments.Length; i++)
             {
-                Console.WriteLine($"{i + 1}. {departments[i]}");
+                deptMenu[i] = departments[i].ToString();
             }
-            Console.WriteLine($"{backOption}. Geri");
-            Console.WriteLine();
-            Console.Write("Seciminiz: ");
-            string? input = Console.ReadLine();
+            deptMenu[departments.Length] = "Geri";
 
-            if (input == backOption.ToString())
+            int deptSecim = c.Choices(deptMenu, "Sobe Secimi");
+
+            if (deptSecim == departments.Length)
             {
                 return;
             }
 
-            if (!int.TryParse(input, out int deptIndex) || deptIndex < 1 || deptIndex > departments.Length)
-            {
-                PrintError("Yanlis secim");
-                Pause();
-                BookingFlow(user);
-                return;
-            }
-
-            Department selectedDept = departments[deptIndex - 1];
+            Department selectedDept = departments[deptSecim];
             var doctors = _doctorService.GetApprovedByDepartment(selectedDept);
 
             if (doctors.Count == 0)
@@ -105,100 +98,69 @@ namespace Hospital.Menus
                 return;
             }
 
-            int doctorBackOption = doctors.Count + 1;
-
-            PrintHeader($"{selectedDept} Sobe Hekimleri");
+            string[] doctorMenu = new string[doctors.Count + 1];
             for (int i = 0; i < doctors.Count; i++)
             {
-                Console.WriteLine($"{i + 1}. {doctors[i].TamAd}  (Is tecrubesi: {doctors[i].IsTecrubesi} il)");
+                doctorMenu[i] = $"{doctors[i].TamAd}  (Is tecrubesi: {doctors[i].IsTecrubesi} il)";
             }
-            Console.WriteLine($"{doctorBackOption}. Geri");
-            Console.WriteLine();
-            Console.Write("Hekim secin: ");
+            doctorMenu[doctors.Count] = "Geri";
 
-            string? doctorInput = Console.ReadLine();
-            if (doctorInput == doctorBackOption.ToString())
+            int docSecim = c.Choices(doctorMenu, $"{selectedDept} Sobe Hekimleri");
+            if (docSecim == doctors.Count)
             {
                 BookingFlow(user);
                 return;
             }
 
-            if (!int.TryParse(doctorInput, out int docIndex) || docIndex < 1 || docIndex > doctors.Count)
-            {
-                PrintError("Yanlis secim");
-                Pause();
-                BookingFlow(user);
-                return;
-            }
-
-            Doctor selectedDoctor = doctors[docIndex - 1];
+            Doctor selectedDoctor = doctors[docSecim];
             SelectDateFlow(user, selectedDoctor);
         }
 
         private static void SelectDateFlow(User user, Doctor doctor)
         {
             var dates = _appointmentService.GetAvailableDatesForDoctor(doctor.Id);
-            int backOption = dates.Count + 1;
-
-            PrintHeader($"{doctor.TamAd} Ucun tarix secin");
+            ChoiceMenuInfo c = new();
+            string[] dateMenu = new string[dates.Count + 1];
             for (int i = 0; i < dates.Count; i++)
             {
-                Console.WriteLine($"{i + 1}. {dates[i]:dd.MM.yyyy dddd}");
+                dateMenu[i] = $"{dates[i]:dd.MM.yyyy dddd}";
             }
-            Console.WriteLine($"{backOption}. Geri");
-            Console.WriteLine();
-            Console.Write("Seciminiz: ");
-            string? input = Console.ReadLine();
+            dateMenu[dates.Count] = "Geri";
 
-            if (input == backOption.ToString())
+            int secim = c.Choices(dateMenu, $"{doctor.TamAd} Ucun tarix secin");
+
+            if (secim == dates.Count)
             {
                 BookingFlow(user);
                 return;
             }
 
-            if (!int.TryParse(input, out int dateIndex) || dateIndex < 1 || dateIndex > dates.Count)
-            {
-                PrintError("Yanlis secim");
-                Pause();
-                SelectDateFlow(user, doctor);
-                return;
-            }
-
-            DateTime selectedDate = dates[dateIndex - 1];
+            DateTime selectedDate = dates[secim];
             SelectSlotFlow(user, doctor, selectedDate);
         }
 
         private static void SelectSlotFlow(User user, Doctor doctor, DateTime date)
         {
             var slots = _appointmentService.GetSlotsForDoctorAndDate(doctor.Id, date);
-            int backOption = slots.Count + 1;
+            ChoiceMenuInfo c = new();
 
-            PrintHeader($"{doctor.TamAd} - {date:dd.MM.yyyy} Ucun Saatlar");
+            string[] menu = new string[slots.Count + 1];
             for (int i = 0; i < slots.Count; i++)
             {
                 string status = slots[i].IsReserved ? "Rezerv olub" : "Rezerv olmayib";
-                Console.WriteLine($"{i + 1}. {slots[i].SaatAraligi}   ->   {status}");
+                menu[i] = $"{slots[i].SaatAraligi}   ->   {status}";
             }
-            Console.WriteLine($"{backOption}. Geri");
-            Console.WriteLine();
-            Console.Write("Saat secin: ");
+            menu[slots.Count] = "Geri";
 
-            string? input = Console.ReadLine();
-            if (input == backOption.ToString())
+            int secim = c.Choices(menu, $"{doctor.TamAd} - {date:dd.MM.yyyy} Ucun Saatlar");
+
+            if (secim == slots.Count)
             {
                 SelectDateFlow(user, doctor);
                 return;
             }
 
-            if (!int.TryParse(input, out int slotIndex) || slotIndex < 1 || slotIndex > slots.Count)
-            {
-                PrintError("Yanlis secim");
-                Pause();
-                SelectSlotFlow(user, doctor, date);
-                return;
-            }
-
-            var selectedSlot = slots[slotIndex - 1];
+            var selectedSlot = slots[secim];
 
             if (selectedSlot.IsReserved)
             {
@@ -220,7 +182,6 @@ namespace Hospital.Menus
 
             string receiptPath = _receiptService.GenerateReceipt(user, doctor, selectedSlot);
             Console.WriteLine($"Cekiniz yaradildi: {receiptPath}");
-
             Pause();
             MainMenu.ShowMainMenu();
         }

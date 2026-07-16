@@ -1,4 +1,5 @@
 ﻿using Hospital.Menus;
+using static Hospital.Info.ConsoleInfo;
 
 namespace Hospital
 {

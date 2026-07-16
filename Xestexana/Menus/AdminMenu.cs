@@ -1,5 +1,6 @@
 ﻿using Hospital.Back;
 using static Hospital.Info.ConsoleInfo;
+using Hospital.Info;
 using Hospital.Properties;
 namespace Hospital.Menus
 {
@@ -26,36 +27,29 @@ namespace Hospital.Menus
 
         private static void AdminMenu()
         {
+            string[] menu = {"Gozleyen hekim muraciatlerine bax", "Butun hekimlere bax", "Butun istifadecilere bax", "Butun rezervasiyalara bax", "Cixis" };
+
             while (true)
             {
-                PrintHeader("ADMIN PANELI");
-                Console.WriteLine("1. Gozleyen hekim muraciatlerine bax");
-                Console.WriteLine("2. Butun hekimlere bax");
-                Console.WriteLine("3. Butun istifadecilere bax");
-                Console.WriteLine("4. Butun rezervasiyalara bax");
-                Console.WriteLine("5. Cixis");
-                Console.WriteLine();
-                Console.Write("Seciminiz: ");
-                string? choice = Console.ReadLine();
-                switch (choice)
+                ChoiceMenuInfo c = new ChoiceMenuInfo();
+                int secim = c.Choices(menu, "Admin Paneli");
+
+                switch (secim)
                 {
-                    case "1":
+                    case 0:
                         ReviewPendingDoctors();
                         break;
-                    case "2":
+                    case 1:
                         ListAllDoctors();
                         break;
-                    case "3":
+                    case 2:
                         ListAllUsers();
                         break;
-                    case "4":
+                    case 3:
                         ListAllReservations();
                         break;
-                    case "5":
+                    case 4:
                         return;
-                    default:
-                        PrintError("Yanlis secim");
-                        break;
                 }
             }
         }
