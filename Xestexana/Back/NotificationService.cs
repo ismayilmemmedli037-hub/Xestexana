@@ -9,9 +9,9 @@
             string entry =
                 $"--------------------------------------------------\n" +
                 $"Tarix     : {DateTime.Now:dd.MM.yyyy HH:mm:ss}\n" +
-                $"Kimə      : {toEmail}\n" +
-                $"Mövzu     : {subject}\n" +
-                $"Mətn      : {body}\n";
+                $"Kime      : {toEmail}\n" +
+                $"Movzu     : {subject}\n" +
+                $"Metn      : {body}\n";
 
             JsonFileService.AppendLine(_logPath, entry);
 
