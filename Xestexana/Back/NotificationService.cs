@@ -16,8 +16,6 @@
             JsonFileService.AppendLine(_logPath, entry);
 
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine();
-            Console.WriteLine($"Mail Gonderildi -> {toEmail} | Movzu: {subject}");
             Console.ResetColor();
         }
     }
